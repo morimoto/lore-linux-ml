@@ -13,37 +13,22 @@
 SCRIPT=`readlink -f "$0" | xargs dirname`
 . ${SCRIPT}/lib
 
-ML=$1
-URL="all/?q=tc%3A"`${SCRIPT}/url_encode.py ${ML}`
-DIR=`readlink -f $2`
-DAY_FROM=$3
-DAY_TO=$4
+CFG=.daily_download.lastday
+CMD=.daily_download.cmd
 
-CFG=.${ML}.lastday
-CMD=.${ML}.cmd
+URL=`${SCRIPT}/url_encode.py $1`
+DIR=`daily_outdir $2`
+DAY_FROM=`daily_dayfrom ${DIR}/${CFG} $3`
+DAY_TO=`daily_dayto $4`
 
-[ x = x${DAY_FROM} ] && DAY_FROM=`cat ${DIR}/${CFG}`
-[ x = x${DAY_TO} ] && DAY_TO=`date +%Y-%m-%d`
+daily_download "$URL" "$DIR" "$DAY_FROM" "$DAY_TO"
 
-mkdir -p ${DIR}
-
-# This script downloads Linux ML daily
-# except ${to}. Otherwise the script will be
-# very complex if it calls many times in same day.
-DAY=${DAY_FROM}
-while [ x${DAY} != x${DAY_TO} ]
-do
-	PREFIX=`echo ${DAY} | sed -e "s/-//g"`
-	download "${URL}+AND+d%3A${DAY}..${DAY}" ${DIR} ${PREFIX}
-	DAY=`date '+%Y-%m-%d' --date "1 day ${DAY}"`
-done
-
-# save DAY_TO
+# save day_to
 echo ${DAY_TO} > ${DIR}/${CFG}
 
 # save command
 # we don't need call this script again
 if [ ! -f ${DIR}/${CMD} ]; then
-	echo "${SCRIPT}/ml_daily_download.sh ${ML} ${DIR}" > ${DIR}/${CMD}
+	echo "${SCRIPT}/ml_daily_download.sh \"$1\" \"${DIR}\"" > ${DIR}/${CMD}
 	chmod +x ${DIR}/${CMD}
 fi

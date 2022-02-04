@@ -53,7 +53,7 @@ download() {
 		num=`expr ${num} + 1`
 
 		if [ ${newline} = 80 ]; then
-			newline = 00
+			newline=0
 			echo
 		fi
 	done
@@ -61,4 +61,45 @@ download() {
 	[ ${newline} != 80 ]; echo
 
 	rm -fr ${tmp}
+}
+
+daily_outdir() {
+	local dir=`readlink -f $1`
+	mkdir -p ${dir}
+
+	echo "${dir}"
+}
+
+daily_dayfrom() {
+	local cfg=$1
+	local day_from=$2
+	[ x = x${day_from} ] && day_from=`cat ${cfg}`
+
+	echo "${day_from}"
+}
+
+daily_dayto() {
+	local day_to=$1
+	[ x = x${day_to} ] && day_to=`date +%Y-%m-%d`
+
+	echo "${day_to}"
+}
+
+daily_download() {
+	local url=$1
+	local dir=$2
+	local day_from=$3
+	local day_to=$4
+
+	# This script downloads Linux ML daily
+	# except ${to}. Otherwise the script will be
+	# very complex if it calls many times in same day.
+	local day=${day_from}
+	while [ x${day} != x${day_to} ]
+	do
+		local prefix=`echo ${day} | sed -e "s/-//g"`
+		download "all/?q=%28${url}%29+AND+d%3A${day}..${day}" ${dir} ${prefix}
+
+		day=`date '+%Y-%m-%d' --date "1 day ${day}"`
+	done
 }
