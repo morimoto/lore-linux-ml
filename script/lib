@@ -27,18 +27,13 @@ download() {
 		[ $? != 0 ] && break
 		page=`expr ${page} + 200`
 
-		cat ${tmp}/tmp | sed -e "s/^href=\"//" | sed -e "s/\/.*//" >> ${tmp}/tmp_list
+		cat ${tmp}/tmp | sed -e "s/^href=\"//" | sed -e "s/\/.*//" >> ${tmp}/idlist
 	done
 
-	if [ ! -f ${tmp}/tmp_list ]; then
+	if [ ! -f ${tmp}/idlist ]; then
 		rm -fr ${tmp}
 		return
 	fi
-
-	#
-	# ID list will be sorted to avoid duplicate download.
-	#
-	sort ${tmp}/tmp_list | uniq > ${tmp}/idlist
 
 	#
 	# download Linux ML
