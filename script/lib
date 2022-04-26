@@ -98,7 +98,7 @@ daily_download() {
 	while [ x${day} != x${day_to} ]
 	do
 		local prefix=`echo ${day} | sed -e "s/-//g"`
-		download "all/?q=%28${url}%29+AND+d%3A${day}..${day}" ${dir} ${prefix}
+		download "all/?q=tc%3A%28${url}%29+AND+d%3A${day}..${day}" ${dir} ${prefix}
 
 		day=`date '+%Y-%m-%d' --date "1 day ${day}"`
 	done
