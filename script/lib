@@ -81,7 +81,7 @@ daily_dayto() {
 }
 
 daily_download() {
-	local url=$1
+	local url="$1"
 	local dir=$2
 	local day_from=$3
 	local day_to=$4
