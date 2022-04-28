@@ -19,9 +19,9 @@ download() {
 	# load ID list first
 	#
 	mkdir -p ${tmp}
+	echo "${url}"
 	while :
 	do
-		echo "${url}&o=${page}"
 		wget -q "${url}&o=${page}" -O ${tmp}/index-${page}
 		grep "^href=" ${tmp}/index-${page} | grep "</a></b>$" > ${tmp}/tmp
 		[ $? != 0 ] && break
@@ -47,7 +47,7 @@ download() {
 		newline=`expr ${newline} + 1`
 		num=`expr ${num} + 1`
 
-		if [ ${newline} = 80 ]; then
+		if [ ${newline} = 100 ]; then
 			newline=0
 			echo
 		fi
